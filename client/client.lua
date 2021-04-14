@@ -1,15 +1,3 @@
-local Keys = {
-    ["ESC"] = 322, ["F1"] = 288, ["F2"] = 289, ["F3"] = 170, ["F5"] = 166, ["F6"] = 167, ["F7"] = 168, ["F8"] = 169, ["F9"] = 56, ["F10"] = 57,
-    ["~"] = 243, ["1"] = 157, ["2"] = 158, ["3"] = 160, ["4"] = 164, ["5"] = 165, ["6"] = 159, ["7"] = 161, ["8"] = 162, ["9"] = 163, ["-"] = 84, ["="] = 83, ["BACKSPACE"] = 177,
-    ["TAB"] = 37, ["Q"] = 44, ["W"] = 32, ["E"] = 38, ["R"] = 45, ["T"] = 245, ["Y"] = 246, ["U"] = 303, ["P"] = 199, ["["] = 39, ["]"] = 40, ["ENTER"] = 18,
-    ["CAPS"] = 137, ["A"] = 34, ["S"] = 8, ["D"] = 9, ["F"] = 23, ["G"] = 47, ["H"] = 74, ["K"] = 311, ["L"] = 182,
-    ["LEFTSHIFT"] = 21, ["Z"] = 20, ["X"] = 73, ["C"] = 26, ["V"] = 0, ["B"] = 29, ["N"] = 249, ["M"] = 244, [","] = 82, ["."] = 81,
-    ["LEFTCTRL"] = 36, ["LEFTALT"] = 19, ["SPACE"] = 22, ["RIGHTCTRL"] = 70,
-    ["HOME"] = 213, ["PAGEUP"] = 10, ["PAGEDOWN"] = 11, ["DELETE"] = 178,
-    ["LEFT"] = 174, ["RIGHT"] = 175, ["TOP"] = 27, ["DOWN"] = 173,
-    ["NENTER"] = 201, ["N4"] = 108, ["N5"] = 60, ["N6"] = 107, ["N+"] = 96, ["N-"] = 97, ["N7"] = 117, ["N8"] = 61, ["N9"] = 118
-}
-
 ESX = nil
 
 Citizen.CreateThread(function()
@@ -28,7 +16,6 @@ _menuPool:Add(BlackMarketMenu)
 function AddShopsMenu(menu)
 
     local utilemenu = _menuPool:AddSubMenu(menu, "🔫 Utiles"--[[Translate it to your language]], nil, nil, "image_blackmarket-a", "image_blackmarket_cuchi")
-
     local gadgetmenu = _menuPool:AddSubMenu(menu, "🛒 Gadgets"--[[Translate it to your language]], nil, nil, "image_blackmarket-a", "image_blackmarket_cuchi")
 
 --:::::::::::::::::::::::::::::::::::::::::::::::::::::::| UTILE ITEMS |::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::--
@@ -73,9 +60,7 @@ function AddShopsMenu(menu)
             ESX.ShowNotification('~r~Prix : ~h~ '--[[Translate it to your language]] .. Config.Grip .. '$')
             Citizen.Wait(1)
             ESX.ShowAdvancedNotification("Marché Noir"--[[Translate it to your language]], "Vous demandez une ~r~Poignée"--[[Translate it to your language]], "", "CHAR_BLOCKED", 1)
-
         end
-            
     end
 
 --:::::::::::::::::::::::::::::::::::::::::::::::::::::::| MENU GADGET |::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::--
@@ -92,9 +77,7 @@ function AddShopsMenu(menu)
             Citizen.Wait(1)
             ESX.ShowAdvancedNotification("Marché Noir"--[[Translate it to your language]], "Vous demandez une ~r~Lampe"--[[Translate it to your language]], "", "CHAR_BLOCKED", 1)
         end
-    
     end
-
 end
 
 AddShopsMenu(BlackMarketMenu)
@@ -102,27 +85,19 @@ _menuPool:RefreshIndex()
 
 --:::::::::::::::::::::::::::::::::::::::::::::::::::::::| LOCALISATION |::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::--
 
-
-local BlackMarket = {
-    {x = 1003.8208007813, y = 2456.9731445313, z = 49.611461639404}, 
-}
-
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         _menuPool:ProcessMenus()
         _menuPool:MouseEdgeEnabled (false);
 
-        for k in pairs(BlackMarket) do
+        local plyCoords = GetEntityCoords(GetPlayerPed(-1), false)
+        local dist = Vdist(plyCoords.x, plyCoords.y, plyCoords.z, 1003.8208007813, 2456.9731445313, 49.611461639404)
 
-            local plyCoords = GetEntityCoords(GetPlayerPed(-1), false)
-            local dist = Vdist(plyCoords.x, plyCoords.y, plyCoords.z, BlackMarket[k].x, BlackMarket[k].y, BlackMarket[k].z)
-
-            if dist <= 2.0 then
-                ESX.ShowHelpNotification("Appuyez sur ~INPUT_TALK~ pour voir ce que propose le ~r~vendeur") -- Translate it to your language 
-                if IsControlJustPressed(1,Keys["E"]) then 
-                    BlackMarketMenu:Visible(not BlackMarketMenu:Visible())
-                end
+        if dist <= 2.0 then
+            ESX.ShowHelpNotification("Appuyez sur ~INPUT_TALK~ pour voir ce que propose le ~r~vendeur") -- Translate it to your language 
+            if IsControlJustPressed(1,38) then 
+                BlackMarketMenu:Visible(not BlackMarketMenu:Visible())
             end
         end
     end
@@ -130,23 +105,17 @@ end)
 
 --:::::::::::::::::::::::::::::::::::::::::::::::::::::::| BLIP |::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::--
 
-local blips = {
-    {title="BlackMarket", colour=1, id=378, x = 1004.4245605469, y = 2456.9865722656, z = 49.610412597656},
-}
-
 Citizen.CreateThread(function()
     if Config.Blip then
-        for _, info in pairs(blips) do
-            info.blip = AddBlipForCoord(info.x, info.y, info.z)
-            SetBlipSprite(info.blip, info.id)
-            SetBlipDisplay(info.blip, 4)
-            SetBlipScale(info.blip, 1.0)
-            SetBlipColour(info.blip, info.colour)
-            SetBlipAsShortRange(info.blip, true)
-            BeginTextCommandSetBlipName("STRING")
-            AddTextComponentString(info.title)
-            EndTextCommandSetBlipName(info.blip)
-        end
+        blip = AddBlipForCoord(1004.4245605469, 2456.9865722656, 49.610412597656)
+        SetBlipSprite(blip, 378)
+        SetBlipDisplay(blip, 4)
+        SetBlipScale(blip, 1.0)
+        SetBlipColour(blip, 1)
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString("BlackMarket")
+        EndTextCommandSetBlipName(blip)
     end
 end)
 
@@ -155,8 +124,8 @@ end)
 Citizen.CreateThread(function()
     local hash = GetHashKey(Config.Ped)
     while not HasModelLoaded(hash) do
-    RequestModel(hash)
-    Wait(20)
+        RequestModel(hash)
+        Wait(20)
     end
     ped = CreatePed("PED_TYPE_CIVMALE", Config.Ped, 1004.4245605469, 2456.9865722656, 48.610412597656, 356.86, false, true)
     SetBlockingOfNonTemporaryEvents(ped, true)
@@ -195,7 +164,7 @@ Citizen.CreateThread(function()
 end)
 
 ----------------------------------------------
---|𝗗𝗶𝘀𝗰𝗼𝗿𝗱 : Cuchi'#0999                    
+--|𝗗𝗶𝘀𝗰𝗼𝗿𝗱 : ! Cuchi'#3120                    
 --|𝗔𝘂𝘁𝗵𝗼𝗿 : 𝗖𝘂𝗰𝗵𝗶❜                   ♥      
 --|𝗗𝗼 𝗻𝗼𝘁 𝗿𝗲-𝗿𝗲𝗹𝗲𝗮𝘀𝗲.                       
 ----------------------------------------------
